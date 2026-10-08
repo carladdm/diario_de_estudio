@@ -1,0 +1,39 @@
+# MEMORY.md — Diario de Estudio
+
+Memoria del proyecto entre sesiones. Máximo ~50 líneas: resume o elimina lo que ya no aporte.
+
+## Estado actual
+- v6: v5 + mapa de calor refinado con la spec 001 **v2.2** y el plan **v2** (ambos implementados y verificados): cortes enteros `c₁/c₂/c₃` (`cortesDeNiveles`), totales redondeados a entero (0,4 → celda vacía y no sube `max`), fechas corruptas fuera del mapa y mostradas tal cual en la lista (E1), es-ES en leyenda y detalle, año en las etiquetas del año nuevo, paleta `#767ef5/#6366f1/#5457e8/#4338ca` (≥3:1 vs blanco: 3,46 · 4,47 · 5,38 · 7,90), gap 4→3 px y RF-11: el `max` del campo de fecha siempre es «hoy» (al cargar, pintar y enfocar, sin timers) más guarda en el `submit`.
+- La lógica del mapa y del objetivo vive en `calor.js` (funciones puras con `hoy` como parámetro; incluye `fechaValida`/`fechaFutura` string-only y los ayudantes de fechas compartidos). Pruebas con `node --test` en `tests/calor.test.js` (**36 en verde**: E1–E12 + N1–N12 + O1–O12).
+- Datos en localStorage.
+- spec `specs/002-objetivo-semanal/spec.md` (**v1.2, APROBADA**), plan **v1 (aprobado)** y fase 4 en marcha: `tasks.md` **T1–T17 hechas** (bloques A y B cerrados y verificados en DevTools: las 6 funciones puras del objetivo en `calor.js`, `node --test` 36/36, `pintarObjetivo()` en `pintarTodo()`, formulario con submit+Enter, tarjeta reutilizando la pura, §8.2–§8.6 en verde); errata corregida en `plan.md` §7 test O12 (90 min con objetivo 200 → `false`; `true` solo si `minutos ≥ objetivo`, con (90, 80) → `true`). §8.4 medido: 2 sesiones (60 lun + 30 mar) → «90 de 300 min», barra 30 %, tarjeta 90 = suma de barras = `minutosDeSemana(...,"2026-10-08")` 90, sin «%» en textos, consola limpia. §8.5 medido: 200 → «90 de 200 min» al instante, 250 tecleado conservado tras repintar y recarga volviendo a 200. §8.6 medido (semana real = 100 min): objetivo 211 → «100 de 211 min» / 47 % / sin mensaje; 100 → «100 de 100 min» / 100 % / mensaje (igualdad exacta D-8); 90 → «100 de 90 min» / 100 % (tope) / mensaje; bajar a 211 → el mensaje desaparece al repintar (bidireccional); estado final 3 sesiones + objetivo 90. Objetivo semanal: clave nueva `diario-estudio-objetivo-semanal` (entero JSON ≥1, corrupto = sin objetivo = `null`), bloque dentro de la tarjeta «Esta semana», funciones puras nuevas `minutosDeSemana(sesiones, hoy)` (sin colisión: la vieja `minutosDeLaSemana()` de app.js se borra y la tarjeta reutiliza la pura), `objetivoValido`, `objetivoDesdeTexto`, `porcentajeDeProgreso` (entero 0–100), `textoDeProgreso` (es-ES, «90,5 de 300 min», `null` sin objetivo) y `objetivoCumplido`; tests nuevos O1–O12 = **36 en verde**. Decisiones plan: D1–D15 (D9 el repintado no pisa el campo, D11 contraste 4,5:1 desde el diseño, D12 mismas reglas de fecha que la tarjeta).
+- Specs: `docs/constitution.md` (principio 6 ya enmendado), spec `specs/001-heat-map/spec.md` (**v2.2, aprobada e implementada**), `specs/001-heat-map/plan.md` (**v2, implementada y verificada**; 32 hallazgos de QA → decisiones D1–D20) y `tasks.md` (descomposición T1–T23, todas completadas, con RF y «Hecho cuando:»). Proceso: spec → aprobación → plan → aprobación → implementar con `node --test` en verde y verificación DevTools (§8 completo).
+
+## Decisiones (y por qué)
+- Sin backend ni dependencias: cualquiera debe poder abrirlo con doble clic.
+- Fecha editable en el formulario: permite registrar días pasados y ver la racha crecer.
+- Mejor racha sin datos propios: se calcula a partir de las sesiones guardadas (nada que desincronizar).
+- Las fechas futuras no cuentan ni para la racha actual ni para la mejor.
+- Las dos rachas comparten tarjeta (dos bloques, se apilan en móvil) para compararlas de un vistazo.
+- Iconos: 🔥 racha actual, 🏆 mejor racha.
+- Semana de lunes a domingo (convención local): los totales arrancan el lunes 00:00; la tarjeta "Esta semana" va aparte de las rachas.
+- Gráfico en HTML/CSS puro (sin canvas ni librerías), escala relativa al día máximo, día de hoy resaltado y futuros atenuados.
+- Cifras con `toLocaleString("es-ES")`: en español las 4 cifras van sin separador ("1230") y el de miles empieza en 5 ("12.345", convención RAE).
+- "Este mes" = mes calendario (día 1 → hoy) en tarjeta blanca propia; un día cuenta con cualquier sesión, como en la racha, y el plural acuerda el adjetivo ("1 día estudiado").
+- Existe la skill `.agents/skills/local-dates/SKILL.md` con reglas y checklist de fechas: leerla antes de tocar fechas y citar su checklist al terminar.
+- Estilo actual: el original (degradado índigo-violeta en la tarjeta de rachas, tarjetas blancas redondeadas con sombra suave), con tres toques conservados del rediseño: subrayado de resaltador bajo las cifras de racha, separadores discontinuos en la lista y accesibilidad invisible (`focus-visible` + `prefers-reduced-motion`). Se probó un rediseño completo "hoja de cuaderno" con la skill `frontend-design` y se revirtió.
+- Puente navegador/node en `calor.js`: `if (typeof module !== "undefined") module.exports = {...}` — sin build ni dependencias y la app sigue abriéndose con doble clic.
+- El mapa se redibuja desde `pintarTodo()`, así que almacén, rachas y estadísticas existentes no se tocaron: solo se mudaron los ayudantes de fechas (nombres idénticos, cero cambio de comportamiento).
+- QA de la spec 001 (v2, decisiones del usuario = recomendadas): sin foco ni teclado en las celdas (solo aria para lector), rótulos abreviados 3 letras, decimales se redondean solo al pintar, niveles inalcanzables → «—», el formulario bloquea fechas futuras (RF-11), ventana solo se recalcula al pintar (sin timers).
+- Constitución #6 enmendada (aprobada por el usuario): interfaz y documentación en español; código en inglés **salvo los identificadores**, que van en español en todo el proyecto para que el código lo entienda quien empieza a programar.
+- QA del plan (v2, D1–D20 en su §11): contratos string-only de `fechaValida`/`fechaFutura` (no-string no lanza), `cortesDeNiveles` con precondición entero ≥1, redondeo con `Math.round` en `totalesPorDia` (0,4 → celda vacía), `formatearFecha` defensivo (fecha corrupta se muestra tal cual → enmienda E1), `max` del campo de fecha al cargar/pintar/enfocar sin timers (enmienda E2), «hoy» fresco en el `submit`, guarda JS verificada quitando `max`, contraste vs `#ffffff`, tests numerados E1–E12 + N1–N12 = 24, RNF-6 con año de sesiones inyectado (<200 ms).
+
+## Aprendizajes y errores a evitar
+- Al usuario le gustó más el estilo original que el rediseño: no cambiar el look completo sin proponerlo antes; si se prueba algo nuevo y no convence, revertir.
+- No dar por bueno un número estimado a mano: el umbral de scroll del mapa se estimó en 416 px y medía 438 (las etiquetas de mes ensanchan sus columnas). En la verificación se midió, se corrigió el plan y se anotó el valor real (corrección revisada y aprobada por el usuario).
+- Al inyectar datos de prueba en DevTools, limpiar filtrando por los ids inyectados y comprobar el recuento de sesiones: un filtro mal puesto borró las 4 sesiones de prueba (se restauraron registrándolas de nuevo con el formulario).
+
+## Próximos pasos
+- **Inmediato**: spec 002 fase 4 — **T17 hecho** (§8.6 en verde: con semana = 100 min, objetivo 211 → «100 de 211 min»/47 %/sin mensaje; 100 → «100 de 100 min»/100 %/con mensaje; 90 → «100 de 90 min»/100 %/con mensaje; bajar a 211 → el mensaje desaparece al repintar; estado final objetivo 90); restan **T18–T24**; verificación §8.4 ya cerrada en verde.
+- Siguiente funcionalidad candidata: editar o borrar sesiones (mismo proceso: spec → plan → implementar).
+- Decisión pendiente de la spec 001 para una futura iteración: consulta de minutos exactos al tocar una celda en móvil.

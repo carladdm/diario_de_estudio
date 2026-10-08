@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diario de Estudio</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="contenedor">
+
+    <header class="cabecera">
+      <h1>📚 Diario de Estudio</h1>
+      <p>Registra tus sesiones y mantén viva tu racha.</p>
+    </header>
+
+    <!-- Rachas: actual y mejor -->
+    <section class="tarjeta tarjeta-racha">
+      <div class="racha-bloque">
+        <p class="racha-etiqueta">Racha actual</p>
+        <p class="racha-valor"><span id="racha-dias">0</span> 🔥</p>
+        <p class="racha-texto" id="racha-texto">0 días seguidos estudiando</p>
+      </div>
+      <div class="racha-bloque">
+        <p class="racha-etiqueta">Mejor racha</p>
+        <p class="racha-valor"><span id="mejor-dias">0</span> 🏆</p>
+        <p class="racha-texto" id="mejor-texto">0 días seguidos estudiando</p>
+      </div>
+    </section>
+
+    <!-- Minutos y gráfico de la semana -->
+    <section class="tarjeta">
+      <h2>Esta semana</h2>
+      <p class="semana-total"><span class="cifra" id="minutos-semana">0</span> minutos estudiados</p>
+      <div class="grafico" id="grafico-semana" aria-label="Minutos estudiados cada día esta semana"></div>
+
+      <!-- Objetivo semanal: estado vacío, formulario y progreso -->
+      <div class="objetivo">
+        <p class="objetivo-vacio" id="objetivo-vacio">Todavía no has fijado tu objetivo semanal. ¡Fíjalo para seguir tu progreso!</p>
+
+        <form id="formulario-objetivo">
+          <div class="campo">
+            <label for="objetivo-minutos">Objetivo semanal (minutos)</label>
+            <input type="number" id="objetivo-minutos" name="objetivo" min="1" step="1" placeholder="Ej. 300" required>
+          </div>
+          <button type="submit">Guardar objetivo</button>
+        </form>
+
+        <p class="objetivo-texto" id="objetivo-texto" hidden></p>
+        <div class="objetivo-barra" id="objetivo-barra" role="img" aria-label="Progreso del objetivo semanal" hidden>
+          <div class="objetivo-barra-relleno" id="objetivo-barra-relleno"></div>
+        </div>
+        <p class="objetivo-cumplido" id="objetivo-cumplido" hidden>¡Objetivo cumplido!</p>
+      </div>
+    </section>
+
+    <!-- Días estudiados este mes -->
+    <section class="tarjeta">
+      <h2>Este mes</h2>
+      <p class="mes-total"><span class="cifra" id="dias-mes">0</span> <span id="dias-mes-texto">días estudiados</span></p>
+    </section>
+
+    <!-- Mapa de calor: últimas 26 semanas (más minutos, más intenso) -->
+    <section class="tarjeta">
+      <h2>Últimas semanas</h2>
+      <div class="mapa-scroll">
+        <div class="mapa-rejilla" id="mapa-calor" aria-label="Minutos estudiados cada día en las últimas 26 semanas"></div>
+      </div>
+      <div class="leyenda" id="mapa-leyenda"></div>
+    </section>
+
+    <!-- Formulario para registrar una sesión -->
+    <section class="tarjeta">
+      <h2>Nueva sesión</h2>
+      <form id="formulario">
+        <div class="campo">
+          <label for="fecha">Fecha</label>
+          <input type="date" id="fecha" name="fecha" required>
+        </div>
+
+        <div class="campo">
+          <label for="tema">Tema</label>
+          <input type="text" id="tema" name="tema" placeholder="Ej. Álgebra lineal" required>
+        </div>
+
+        <div class="campo">
+          <label for="minutos">Minutos</label>
+          <input type="number" id="minutos" name="minutos" min="1" step="1" placeholder="Ej. 30" required>
+        </div>
+
+        <button type="submit">Guardar sesión</button>
+      </form>
+    </section>
+
+    <!-- Lista de sesiones -->
+    <section class="tarjeta">
+      <h2>Sesiones</h2>
+      <ul id="lista-sesiones" class="lista"></ul>
+      <p id="lista-vacia" class="lista-vacia">Todavía no hay sesiones. ¡Anímate a registrar la primera!</p>
+    </section>
+
+  </main>
+
+  <script src="calor.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,456 @@
+/* ===== Base ===== */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f4f5fa;
+  color: #1f2430;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  line-height: 1.5;
+}
+
+.contenedor {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+/* ===== Cabecera ===== */
+.cabecera {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.cabecera h1 {
+  margin: 0 0 4px;
+  font-size: 1.75rem;
+}
+
+.cabecera p {
+  margin: 0;
+  color: #6b7280;
+}
+
+/* ===== Tarjetas ===== */
+.tarjeta {
+  background: #ffffff;
+  border: 1px solid #e6e8f0;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 14px rgba(31, 36, 48, 0.06);
+}
+
+.tarjeta h2 {
+  margin: 0 0 16px;
+  font-size: 1.15rem;
+}
+
+/* ===== Racha ===== */
+.tarjeta-racha {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  border: none;
+  color: #ffffff;
+  text-align: center;
+  padding: 28px 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+/* Cada racha ocupa media tarjeta; en pantallas pequeñas se apilan. */
+.racha-bloque {
+  flex: 1 1 220px;
+}
+
+.racha-etiqueta {
+  margin: 0;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.85;
+}
+
+.racha-valor {
+  margin: 4px 0;
+  font-size: clamp(2.5rem, 12vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+/* Marca de resaltador bajo la cifra (blanca sobre el degradado, va debajo). */
+.racha-valor span {
+  padding-bottom: 0.08em;
+  background-image: linear-gradient(#ffe94d, #ffe94d);
+  background-repeat: no-repeat;
+  background-size: 100% 0.14em;
+  background-position: 0 100%;
+}
+
+.racha-texto {
+  margin: 0;
+  opacity: 0.9;
+}
+
+/* ===== Semana y gráfico ===== */
+.semana-total,
+.mes-total {
+  margin: 0 0 18px;
+  font-size: 1rem;
+  color: #6b7280;
+}
+
+.semana-total .cifra,
+.mes-total .cifra {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #1f2430;
+}
+
+.mes-total {
+  margin-bottom: 0;
+}
+
+.grafico {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 160px;
+}
+
+.grafico-dia {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  min-width: 0;
+}
+
+.grafico-minutos {
+  height: 1.2em;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #4f46e5;
+  white-space: nowrap;
+}
+
+.grafico-area {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+}
+
+/* La altura de cada barra la pone JavaScript (porcentaje del día máximo). */
+.grafico-barra {
+  width: 100%;
+  min-height: 3px;
+  background: #6366f1;
+  border-radius: 6px 6px 0 0;
+}
+
+.grafico-dia.hoy .grafico-barra {
+  background: #7c3aed;
+}
+
+.grafico-dia.futuro {
+  opacity: 0.45;
+}
+
+.grafico-etiqueta {
+  margin-top: 6px;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.grafico-dia.hoy .grafico-etiqueta {
+  color: #4f46e5;
+  font-weight: 700;
+}
+
+/* ===== Objetivo semanal (bloque dentro de «Esta semana») ===== */
+
+/* Separación coherente con los márgenes de la tarjeta y ancho fluido
+   para no desbordar en móvil (RNF-7). */
+.objetivo {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px dashed #d9dce5;
+}
+
+/* El formulario reutiliza .campo y button tal cual. */
+.objetivo form {
+  margin: 0;
+}
+
+/* Estado vacío: gris de D11 (≈4,8:1 sobre la tarjeta blanca). */
+.objetivo-vacio {
+  margin: 0 0 14px;
+  color: #6b7280;
+}
+
+/* Texto «X de Y min»: color principal de D11 (≈15,5:1). */
+.objetivo-texto {
+  margin: 16px 0 8px;
+  font-weight: 600;
+  color: #1f2430;
+}
+
+/* Pista decorativa; el relleno lleva el width en % desde JavaScript.
+   Sin transiciones, para poder medir el contraste (RNF-6). */
+.objetivo-barra {
+  width: 100%;
+  height: 12px;
+  background: #e6e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.objetivo-barra-relleno {
+  height: 100%;
+  background: #4f46e5; /* ≈6,3:1 vs blanco y ≈5,1:1 vs pista (D11) */
+}
+
+/* Éxito con el mismo índigo: tono verde claro no llegaría a 4,5:1 (D11). */
+.objetivo-cumplido {
+  margin: 10px 0 0;
+  font-weight: 700;
+  color: #4f46e5;
+}
+
+/* ===== Formulario ===== */
+.campo {
+  margin-bottom: 14px;
+}
+
+.campo label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.campo input {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  color: #1f2430;
+  background: #fbfbfe;
+  border: 1px solid #d9dce5;
+  border-radius: 10px;
+}
+
+.campo input:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: #4f46e5;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+button:hover {
+  background: #4338ca;
+}
+
+button:active {
+  background: #3730a3;
+}
+
+button:focus-visible {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+}
+
+/* ===== Lista de sesiones ===== */
+.lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.elemento {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px dashed #d9dce5;
+}
+
+.elemento:last-child {
+  border-bottom: none;
+}
+
+.elemento-tema {
+  margin: 0;
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.elemento-meta {
+  margin: 2px 0 0;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.elemento-minutos {
+  flex-shrink: 0;
+  padding: 6px 10px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #4f46e5;
+  background: #eef2ff;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.lista-vacia {
+  margin: 0;
+  text-align: center;
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* ===== Mapa de calor (Últimas semanas) ===== */
+
+/* El scroll es interno: la página nunca se sale de su ancho. */
+.mapa-scroll {
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.mapa-rejilla {
+  display: flex;
+  align-items: flex-start;
+  gap: 3px;
+  min-width: min-content;
+  padding-right: 8px; /* holgura para la última etiqueta de mes */
+}
+
+/* Rótulos de día de la semana, a la izquierda. El primer
+   espacio en blanco reserva la fila de meses. Quedan pegados
+   al borde para seguir distinguiendo las filas al desplazar. */
+.mapa-rotulos {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex-shrink: 0;
+  position: sticky;
+  left: 0;
+  background: #ffffff;
+  z-index: 1;
+}
+
+.mapa-rotulo {
+  height: 12px;
+  font-size: 0.62rem;
+  line-height: 12px;
+  color: #6b7280;
+}
+
+/* Cada columna es una semana: etiqueta de mes + 7 días. */
+.mapa-columna {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+.mapa-mes {
+  height: 14px;
+  font-size: 0.62rem;
+  line-height: 14px;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+.mapa-celda {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+/* Los 5 niveles: de vacío a más intenso.
+   Los 4 tonos cumplen 3:1 contra el blanco de la tarjeta
+   (3,46 · 4,47 · 5,38 · 7,90), como exige RNF-7. */
+.nivel-0 {
+  background: #f0f1f7;
+}
+
+.nivel-1 {
+  background: #767ef5;
+}
+
+.nivel-2 {
+  background: #6366f1;
+}
+
+.nivel-3 {
+  background: #5457e8;
+}
+
+.nivel-4 {
+  background: #4338ca;
+}
+
+.leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.leyenda-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.leyenda-muestra {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+/* ===== Móvil ===== */
+@media (max-width: 480px) {
+  .contenedor {
+    padding: 16px 12px 40px;
+  }
+
+  .tarjeta {
+    padding: 16px;
+  }
+
+  .grafico {
+    gap: 5px;
+  }
+
+  .grafico-minutos {
+    font-size: 0.65rem;
+  }
+}
+
+/* ===== Accesibilidad ===== */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
